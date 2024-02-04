@@ -1,0 +1,15 @@
+[package]
+name = "presistence"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["migration"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+sea-orm = { version = "0.12.12", features = [
+    "sqlx-postgres",
+    "runtime-tokio-rustls",
+] }
+serde = { version = "1.0.196", features = ["derive"] }
