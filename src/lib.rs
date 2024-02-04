@@ -1,4 +1,5 @@
 pub mod operations;
+pub mod service;
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }

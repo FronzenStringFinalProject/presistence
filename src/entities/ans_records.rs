@@ -83,4 +83,14 @@ impl Related<super::quiz::Entity> for Entity {
     }
 }
 
+impl Linked for Entity {
+    type FromEntity = super::children::Entity;
+
+    type ToEntity = super::quiz::Entity;
+
+    fn link(&self) -> Vec<sea_orm::LinkDef> {
+        vec![Relation::Children.def().rev(), Relation::Quiz.def()]
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
