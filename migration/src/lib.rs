@@ -4,6 +4,8 @@ mod m20220101_000001_create_parent_table;
 mod m20240207_181705_create_children_table;
 mod m20240207_183220_create_quiz_table;
 mod m20240207_184348_create_answer_record_table;
+mod m20240209_142558_insert_records;
+
 
 
 pub struct Migrator;
@@ -15,7 +17,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20220101_000001_create_parent_table::Migration),
             Box::new(m20240207_181705_create_children_table::Migration),
             Box::new(m20240207_183220_create_quiz_table::Migration),
-            Box::new(m20240207_184348_create_answer_record_table::Migration)
+            Box::new(m20240207_184348_create_answer_record_table::Migration),
+            Box::new(m20240209_142558_insert_records::Migration)
         ]
     }
 }
