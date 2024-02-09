@@ -29,7 +29,10 @@ impl QuizRecord {
                 sea_orm::JoinType::Join,
                 children::Relation::AnswerRecord.def(),
             )
-            .join(sea_orm::JoinType::Join, answer_record::Relation::Quizes.def())
+            .join(
+                sea_orm::JoinType::Join,
+                answer_record::Relation::Quizes.def(),
+            )
             .columns([answer_record::Column::Correct])
             .columns([
                 quizes::Column::Diff,
@@ -79,7 +82,10 @@ mod test {
                 sea_orm::JoinType::Join,
                 children::Relation::AnswerRecord.def(),
             )
-            .join(sea_orm::JoinType::Join, answer_record::Relation::Quizes.def())
+            .join(
+                sea_orm::JoinType::Join,
+                answer_record::Relation::Quizes.def(),
+            )
             .columns([answer_record::Column::Correct])
             .columns([
                 quizes::Column::Diff,

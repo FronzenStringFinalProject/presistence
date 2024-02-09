@@ -1,7 +1,7 @@
 pub mod operations;
 pub mod service;
 pub use sea_orm;
-pub mod entities;
 mod axum_starter;
+pub mod entities;
 
-pub use axum_starter::{ConnectSQL,SqlConfig};
+pub use axum_starter::{ConnectSQL, SqlConfig};
