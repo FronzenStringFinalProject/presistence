@@ -1,4 +1,4 @@
-use crate::entities::{ans_records, children, prelude::*, quiz};
+use crate::entities::{answer_record, children, prelude::*, quizes};
 use sea_orm::{
     sea_query::Expr, DbErr, EntityTrait, FromQueryResult, QuerySelect, RelationTrait, StreamTrait,
 };
@@ -27,25 +27,25 @@ impl QuizRecord {
             .column(children::Column::Ability)
             .join(
                 sea_orm::JoinType::Join,
-                children::Relation::AnsRecords.def(),
+                children::Relation::AnswerRecord.def(),
             )
-            .join(sea_orm::JoinType::Join, ans_records::Relation::Quiz.def())
-            .columns([ans_records::Column::Correct])
+            .join(sea_orm::JoinType::Join, answer_record::Relation::Quizes.def())
+            .columns([answer_record::Column::Correct])
             .columns([
-                quiz::Column::Diff,
-                quiz::Column::Disc,
-                quiz::Column::Lambdas,
-                quiz::Column::Quiz,
-                quiz::Column::Ans,
+                quizes::Column::Diff,
+                quizes::Column::Disc,
+                quizes::Column::Lambda,
+                quizes::Column::Quiz,
+                quizes::Column::Answer,
             ])
             .column_as(
-                Expr::col(quiz::Column::Lambdas).add(
-                    Expr::expr(Expr::val(1).sub(Expr::col(quiz::Column::Lambdas))).div(
+                Expr::col(quizes::Column::Lambda).add(
+                    Expr::expr(Expr::val(1).sub(Expr::col(quizes::Column::Lambda))).div(
                         Expr::val(1).add(Expr::cust_with_expr(
                             "exp($1)",
-                            Expr::val(-1.702).mul(Expr::col(quiz::Column::Disc)).mul(
+                            Expr::val(-1.702).mul(Expr::col(quizes::Column::Disc)).mul(
                                 Expr::col(children::Column::Ability)
-                                    .sub(Expr::col(quiz::Column::Diff)),
+                                    .sub(Expr::col(quizes::Column::Diff)),
                             ),
                         )),
                     ),
@@ -67,7 +67,7 @@ mod test {
         RelationTrait,
     };
 
-    use crate::entities::{ans_records, children, prelude::*, quiz};
+    use crate::entities::{answer_record, children, prelude::*, quizes};
 
     use super::QuizRecord;
     #[test]
@@ -77,25 +77,25 @@ mod test {
             .column(children::Column::Ability)
             .join(
                 sea_orm::JoinType::Join,
-                children::Relation::AnsRecords.def(),
+                children::Relation::AnswerRecord.def(),
             )
-            .join(sea_orm::JoinType::Join, ans_records::Relation::Quiz.def())
-            .columns([ans_records::Column::Correct])
+            .join(sea_orm::JoinType::Join, answer_record::Relation::Quizes.def())
+            .columns([answer_record::Column::Correct])
             .columns([
-                quiz::Column::Diff,
-                quiz::Column::Disc,
-                quiz::Column::Lambdas,
-                quiz::Column::Quiz,
-                quiz::Column::Ans,
+                quizes::Column::Diff,
+                quizes::Column::Disc,
+                quizes::Column::Lambda,
+                quizes::Column::Quiz,
+                quizes::Column::Answer,
             ])
             .column_as(
-                Expr::col(quiz::Column::Lambdas).add(
-                    Expr::expr(Expr::val(1).sub(Expr::col(quiz::Column::Lambdas))).div(
+                Expr::col(quizes::Column::Lambda).add(
+                    Expr::expr(Expr::val(1).sub(Expr::col(quizes::Column::Lambda))).div(
                         Expr::val(1).add(Expr::cust_with_expr(
                             "exp($1)",
-                            Expr::val(-1.702).mul(Expr::col(quiz::Column::Disc)).mul(
+                            Expr::val(-1.702).mul(Expr::col(quizes::Column::Disc)).mul(
                                 Expr::col(children::Column::Ability)
-                                    .sub(Expr::col(quiz::Column::Diff)),
+                                    .sub(Expr::col(quizes::Column::Diff)),
                             ),
                         )),
                     ),

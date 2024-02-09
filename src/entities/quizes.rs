@@ -7,29 +7,35 @@ pub struct Entity;
 
 impl EntityName for Entity {
     fn table_name(&self) -> &str {
-        "children"
+        "quizes"
     }
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel)]
 pub struct Model {
-    pub cid: i32,
-    pub name: String,
-    pub ability: f64,
-    pub parent: i32,
+    pub qid: i32,
+    pub quiz: String,
+    pub answer: i32,
+    pub group: i32,
+    pub diff: f64,
+    pub disc: f64,
+    pub lambda: f64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
-    Cid,
-    Name,
-    Ability,
-    Parent,
+    Qid,
+    Quiz,
+    Answer,
+    Group,
+    Diff,
+    Disc,
+    Lambda,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
 pub enum PrimaryKey {
-    Cid,
+    Qid,
 }
 
 impl PrimaryKeyTrait for PrimaryKey {
@@ -42,17 +48,20 @@ impl PrimaryKeyTrait for PrimaryKey {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     AnswerRecord,
-    Parent,
+    QuizGroups,
 }
 
 impl ColumnTrait for Column {
     type EntityName = Entity;
     fn def(&self) -> ColumnDef {
         match self {
-            Self::Cid => ColumnType::Integer.def(),
-            Self::Name => ColumnType::String(Some(255u32)).def(),
-            Self::Ability => ColumnType::Double.def(),
-            Self::Parent => ColumnType::Integer.def(),
+            Self::Qid => ColumnType::Integer.def(),
+            Self::Quiz => ColumnType::String(Some(255u32)).def(),
+            Self::Answer => ColumnType::Integer.def(),
+            Self::Group => ColumnType::Integer.def(),
+            Self::Diff => ColumnType::Double.def(),
+            Self::Disc => ColumnType::Double.def(),
+            Self::Lambda => ColumnType::Double.def(),
         }
     }
 }
@@ -61,9 +70,9 @@ impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::AnswerRecord => Entity::has_many(super::answer_record::Entity).into(),
-            Self::Parent => Entity::belongs_to(super::parent::Entity)
-                .from(Column::Parent)
-                .to(super::parent::Column::Pid)
+            Self::QuizGroups => Entity::belongs_to(super::quiz_groups::Entity)
+                .from(Column::Group)
+                .to(super::quiz_groups::Column::Gid)
                 .into(),
         }
     }
@@ -75,18 +84,18 @@ impl Related<super::answer_record::Entity> for Entity {
     }
 }
 
-impl Related<super::parent::Entity> for Entity {
+impl Related<super::quiz_groups::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Parent.def()
+        Relation::QuizGroups.def()
     }
 }
 
-impl Related<super::quizes::Entity> for Entity {
+impl Related<super::children::Entity> for Entity {
     fn to() -> RelationDef {
-        super::answer_record::Relation::Quizes.def()
+        super::answer_record::Relation::Children.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::answer_record::Relation::Children.def().rev())
+        Some(super::answer_record::Relation::Quizes.def().rev())
     }
 }
 
