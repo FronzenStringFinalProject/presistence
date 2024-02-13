@@ -1,0 +1,1 @@
+sea-orm-cli generate entity -o .\src\entities\ --database-url postgres://JACKY:wyq020222@localhost/quiz-evaluate --expanded-format

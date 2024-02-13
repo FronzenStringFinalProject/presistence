@@ -15,12 +15,16 @@ impl EntityName for Entity {
 pub struct Model {
     pub pid: i32,
     pub name: String,
+    pub unique_id: String,
+    pub password: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
     Pid,
     Name,
+    UniqueId,
+    Password,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -46,6 +50,8 @@ impl ColumnTrait for Column {
         match self {
             Self::Pid => ColumnType::Integer.def(),
             Self::Name => ColumnType::String(Some(255u32)).def(),
+            Self::UniqueId => ColumnType::String(Some(255u32)).def().unique(),
+            Self::Password => ColumnType::String(Some(255u32)).def(),
         }
     }
 }
