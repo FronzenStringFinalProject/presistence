@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SqlConfig {
     #[serde(alias = "db_url")]
-    url: url::Url,
+    pub url: url::Url,
 }
 
 #[prepare(ConnectSQL?)]
