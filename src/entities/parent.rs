@@ -17,6 +17,7 @@ pub struct Model {
     pub name: String,
     pub unique_id: String,
     pub password: String,
+    pub secret: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -25,6 +26,7 @@ pub enum Column {
     Name,
     UniqueId,
     Password,
+    Secret,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -52,6 +54,7 @@ impl ColumnTrait for Column {
             Self::Name => ColumnType::String(Some(255u32)).def(),
             Self::UniqueId => ColumnType::String(Some(255u32)).def().unique(),
             Self::Password => ColumnType::String(Some(255u32)).def(),
+            Self::Secret => ColumnType::String(Some(255u32)).def(),
         }
     }
 }

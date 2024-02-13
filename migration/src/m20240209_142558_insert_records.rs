@@ -150,6 +150,7 @@ impl IntoActive for Parent {
         parent::ActiveModel {
             pid: Set(pid),
             name: Set(name),
+            ..Default::default()
         }
     }
 

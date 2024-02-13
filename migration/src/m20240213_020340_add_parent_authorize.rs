@@ -25,6 +25,12 @@ impl MigrationTrait for Migration {
                             .string_len(255)
                             .default("INNER_PWD"),
                     )
+                    .add_column(
+                        ColumnDef::new(LocalParent::Secret)
+                            .not_null()
+                            .string_len(255)
+                            .default("INNER_SECRET"),
+                    )
                     .take(),
             )
             .await
@@ -37,6 +43,7 @@ impl MigrationTrait for Migration {
                     .table(Parent::Table)
                     .drop_column(LocalParent::UniqueId)
                     .drop_column(LocalParent::Password)
+                    .drop_column(LocalParent::Secret)
                     .take(),
             )
             .await
@@ -47,4 +54,5 @@ impl MigrationTrait for Migration {
 enum LocalParent {
     UniqueId,
     Password,
+    Secret,
 }

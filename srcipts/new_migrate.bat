@@ -1,0 +1,1 @@
+sea-orm-cli.exe migrate generate $1
