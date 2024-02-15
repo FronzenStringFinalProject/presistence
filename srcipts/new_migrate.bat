@@ -1,1 +1,1 @@
-sea-orm-cli.exe migrate generate $1
+sea-orm-cli.exe migrate generate $0

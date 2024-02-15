@@ -1,1 +1,2 @@
+sea-orm-cli migrate up --database-url postgres://JACKY:wyq020222@localhost/quiz-evaluate
 sea-orm-cli generate entity -o .\src\entities\ --database-url postgres://JACKY:wyq020222@localhost/quiz-evaluate --expanded-format
