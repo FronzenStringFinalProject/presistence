@@ -1,3 +1,4 @@
+pub mod input_models;
 pub mod operations;
 pub mod service;
 pub use sea_orm;
