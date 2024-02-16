@@ -5,6 +5,7 @@ use crate::input_models::parents::NewParent;
 impl super::Insert {
     /// 新家长注册
     pub async fn new_parent(
+        &self,
         db: &impl ConnectionTrait,
         NewParent {
             identity,
