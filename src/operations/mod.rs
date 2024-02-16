@@ -1,7 +1,8 @@
+mod children;
 mod parent;
 
+pub use children::ChildrenOperate;
 pub use parent::ParentOperate;
-
 pub trait OperateTrait {
     type Insert;
     type Update;
