@@ -1,6 +1,8 @@
+mod answer_record;
 mod children;
 mod parent;
 
+pub use answer_record::AnswerRecordOperate;
 pub use children::ChildrenOperate;
 pub use parent::ParentOperate;
 pub trait OperateTrait {

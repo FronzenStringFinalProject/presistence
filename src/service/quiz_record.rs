@@ -3,7 +3,7 @@ use sea_orm::{
     sea_query::Expr, DbErr, EntityTrait, FromQueryResult, QuerySelect, RelationTrait, StreamTrait,
 };
 
-pub struct QuizRecord;
+use super::ChildQuizService;
 
 #[derive(Debug, FromQueryResult)]
 pub struct ChildQuizAns {
@@ -17,10 +17,11 @@ pub struct ChildQuizAns {
     pub pred: f64,
 }
 
-impl QuizRecord {
+impl ChildQuizService {
     pub async fn get_ans_quiz_by_child_id(
         conn: &(impl StreamTrait + sea_orm::ConnectionTrait),
         child_id: i32,
+        number: u64,
     ) -> Result<Vec<ChildQuizAns>, DbErr> {
         let child = Children::find_by_id(child_id)
             .select_only()
@@ -55,6 +56,7 @@ impl QuizRecord {
                 ),
                 "pred",
             )
+            .limit(number)
             .into_model::<ChildQuizAns>()
             .all(conn)
             .await?;
@@ -70,9 +72,11 @@ mod test {
         RelationTrait,
     };
 
-    use crate::entities::{answer_record, children, prelude::*, quizes};
+    use crate::{
+        entities::{answer_record, children, prelude::*, quizes},
+        service::ChildQuizService,
+    };
 
-    use super::QuizRecord;
     #[test]
     fn test_sql() {
         let sql = Children::find_by_id(1)
@@ -123,7 +127,7 @@ mod test {
         .await
         .expect("cannot connect Db");
 
-        let ret = QuizRecord::get_ans_quiz_by_child_id(&conn, 2)
+        let ret = ChildQuizService::get_ans_quiz_by_child_id(&conn, 2, 25)
             .await
             .expect("Query Error");
 
