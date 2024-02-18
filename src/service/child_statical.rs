@@ -3,8 +3,7 @@ use crate::entities::{answer_record, children, quiz_groups, quizes};
 use sea_orm::sea_query::{Asterisk, Expr};
 use sea_orm::{
     ColumnTrait, Condition, ConnectionTrait, DbErr, DerivePartialModel, EntityTrait,
-    FromQueryResult, JoinType, QueryFilter, QuerySelect, QueryTrait, RelationTrait, Select,
-    TransactionTrait,
+    FromQueryResult, JoinType, QueryFilter, QuerySelect, RelationTrait, Select,
 };
 use serde::Serialize;
 
