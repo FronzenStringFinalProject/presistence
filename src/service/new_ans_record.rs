@@ -13,7 +13,7 @@ impl ChildQuizService {
         child_id: i32,
         quiz_id: i32,
         quiz_ans: i32,
-    ) -> Result<(), DbErr> {
+    ) -> Result<bool, DbErr> {
         let ctx = db.begin().await?;
 
         // check ans correct
@@ -30,8 +30,8 @@ impl ChildQuizService {
             correct: Set(correct),
             ..Default::default()
         };
-        active.save(&ctx).await?;
+        answer_record::Entity::insert(active).exec(&ctx).await?;
         ctx.commit().await?;
-        Ok(())
+        Ok(correct)
     }
 }

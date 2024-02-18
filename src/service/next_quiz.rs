@@ -1,4 +1,7 @@
+use crate::entities::answer_record;
 use crate::{entities::children::Entity, utils::predict_correct::predict_correct_expr};
+use sea_orm::sea_query::Query;
+use sea_orm::ColumnTrait;
 use sea_orm::{
     sea_query::Expr, Condition, DbErr, DerivePartialModel, EntityTrait, FromQueryResult,
     QueryFilter, TransactionTrait,
@@ -63,6 +66,15 @@ impl ChildQuizService {
                     .add(
                         Expr::expr(predict_correct_expr(Expr::val(ability)))
                             .lt(Expr::val(max_correct)),
+                    )
+                    .add(
+                        Expr::col(quizes::Column::Qid).not_in_subquery(
+                            Query::select()
+                                .column(answer_record::Column::Qid)
+                                .from(answer_record::Entity)
+                                .and_where(answer_record::Column::Cid.eq(child_id))
+                                .take(),
+                        ),
                     ),
             )
             .into_partial_model::<local_quiz::Quiz>()
