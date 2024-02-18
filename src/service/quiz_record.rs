@@ -1,6 +1,8 @@
-use crate::entities::{answer_record, children, prelude::*, quizes};
-use sea_orm::{sea_query::Expr, DbErr, EntityTrait, FromQueryResult, QuerySelect, RelationTrait, StreamTrait, DerivePartialModel};
 use super::ChildQuizService;
+use crate::entities::{answer_record, children, prelude::*, quizes};
+use sea_orm::{
+    sea_query::Expr, DbErr, EntityTrait, FromQueryResult, QuerySelect, RelationTrait, StreamTrait,
+};
 
 #[derive(Debug, FromQueryResult)]
 pub struct ChildQuizAns {
@@ -20,7 +22,6 @@ impl ChildQuizService {
         child_id: i32,
         number: u64,
     ) -> Result<Vec<ChildQuizAns>, DbErr> {
-
         let child = Children::find_by_id(child_id)
             .select_only()
             .column(children::Column::Ability)

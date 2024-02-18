@@ -45,7 +45,6 @@ impl ChildQuizService {
         // get the quiz in the ability
         use crate::entities::quizes;
         mod local_quiz {
-            use crate::entities::quizes::Entity;
             use sea_orm::DerivePartialModel;
             use sea_orm::FromQueryResult;
             #[derive(Debug, FromQueryResult, DerivePartialModel)]

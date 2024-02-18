@@ -1,7 +1,7 @@
-mod utils;
 pub mod input_models;
 pub mod operations;
 pub mod service;
+mod utils;
 pub use sea_orm;
 mod axum_starter;
 pub mod entities;
