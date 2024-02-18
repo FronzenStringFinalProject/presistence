@@ -45,10 +45,11 @@ impl ChildQuizService {
         // get the quiz in the ability
         use crate::entities::quizes;
         mod local_quiz {
+            use crate::entities::prelude::Quizes;
             use sea_orm::DerivePartialModel;
             use sea_orm::FromQueryResult;
             #[derive(Debug, FromQueryResult, DerivePartialModel)]
-            #[sea_orm(entity = "Entity")]
+            #[sea_orm(entity = "Quizes")]
             pub(super) struct Quiz {
                 pub(super) qid: i32,
                 pub(super) quiz: String,

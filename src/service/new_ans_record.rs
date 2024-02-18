@@ -1,6 +1,5 @@
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, Set,
-    TransactionTrait,
+    ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, Set, TransactionTrait,
 };
 
 use crate::entities::{answer_record, quizes};

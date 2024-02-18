@@ -7,4 +7,4 @@ mod insert;
 
 db_operate!(ParentOperate);
 
-pub(self) use crate::entities::parent as model;
+use crate::entities::parent as model;
