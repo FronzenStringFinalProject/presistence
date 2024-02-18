@@ -31,10 +31,11 @@ pub enum Column {
 pub enum PrimaryKey {
     Cid,
     Qid,
+    Date,
 }
 
 impl PrimaryKeyTrait for PrimaryKey {
-    type ValueType = (i32, i32);
+    type ValueType = (i32, i32, Date);
     fn auto_increment() -> bool {
         false
     }

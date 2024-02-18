@@ -32,17 +32,20 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .from(AnswerRecord::Table, AnswerRecord::Cid)
-                            .to(Children::Table, Children::Cid),
+                            .to(Children::Table, Children::Cid)
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .from(AnswerRecord::Table, AnswerRecord::Qid)
-                            .to(Quizes::Table, Quizes::Qid),
+                            .to(Quizes::Table, Quizes::Qid)
+                            .on_delete(ForeignKeyAction::Cascade),
                     )
                     .primary_key(
                         Index::create()
                             .col(AnswerRecord::Cid)
-                            .col(AnswerRecord::Qid),
+                            .col(AnswerRecord::Qid)
+                            .col(AnswerRecord::Date),
                     )
                     .to_owned(),
             )

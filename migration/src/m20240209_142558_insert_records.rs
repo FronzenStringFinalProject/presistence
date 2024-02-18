@@ -71,10 +71,13 @@ where
     let mut rdr = csv::Reader::from_reader(Cursor::new(csv));
     let activates = rdr
         .deserialize::<P>()
-        .map(|payload| payload.expect("CSV Error").into_active());
+        .map(|payload| payload.expect("CSV Error").into_active())
+        .collect::<Vec<P::Active>>();
 
-    for active in activates {
-        <P::Active as ActiveModelTrait>::Entity::insert(active)
+    let active_iter = activates.chunks(256);
+
+    for active in active_iter {
+        <P::Active as ActiveModelTrait>::Entity::insert_many(active.iter().cloned())
             .exec(db)
             .await?;
     }
@@ -94,7 +97,10 @@ use presistence::{
     entities::{answer_record, children, parent, quiz_groups, quizes},
     sea_orm::{ActiveModelTrait, EntityTrait},
 };
+
 impl IntoActive for AnswerRecord {
+    type Active = answer_record::ActiveModel;
+
     fn into_active(self) -> answer_record::ActiveModel {
         let AnswerRecord {
             cid,
@@ -103,15 +109,14 @@ impl IntoActive for AnswerRecord {
             record_time,
         } = self;
         answer_record::ActiveModel {
-            cid: Set(cid),
-            qid: Set(qid),
+            cid: Set(cid + 1),
+            qid: Set(qid - 390),
             correct: Set(correct),
             date: Set(record_time),
         }
     }
-
-    type Active = answer_record::ActiveModel;
 }
+
 #[derive(Debug, Deserialize)]
 struct Child {
     cid: i32,
@@ -121,23 +126,24 @@ struct Child {
 }
 
 impl IntoActive for Child {
+    type Active = children::ActiveModel;
+
     fn into_active(self) -> children::ActiveModel {
         let Child {
-            cid,
             name,
             parent_id,
             ability,
+            ..
         } = self;
         children::ActiveModel {
-            cid: Set(cid),
             name: Set(name),
             ability: Set(ability),
             parent: Set(parent_id),
+            ..std::default::Default::default()
         }
     }
-
-    type Active = children::ActiveModel;
 }
+
 #[derive(Debug, Deserialize)]
 struct Parent {
     pid: i32,
@@ -145,17 +151,17 @@ struct Parent {
 }
 
 impl IntoActive for Parent {
+    type Active = parent::ActiveModel;
+
     fn into_active(self) -> parent::ActiveModel {
-        let Parent { pid, name } = self;
+        let Parent { name, .. } = self;
         parent::ActiveModel {
-            pid: Set(pid),
             name: Set(name),
             ..Default::default()
         }
     }
-
-    type Active = parent::ActiveModel;
 }
+
 #[derive(Debug, Deserialize)]
 struct QuizLevel {
     level_id: i32,
@@ -163,16 +169,17 @@ struct QuizLevel {
 }
 
 impl IntoActive for QuizLevel {
+    type Active = quiz_groups::ActiveModel;
+
     fn into_active(self) -> quiz_groups::ActiveModel {
-        let QuizLevel { level_id, name } = self;
+        let QuizLevel { name, .. } = self;
         quiz_groups::ActiveModel {
-            gid: Set(level_id),
             name: Set(name),
+            ..Default::default()
         }
     }
-
-    type Active = quiz_groups::ActiveModel;
 }
+
 #[derive(Debug, Deserialize)]
 struct Quiz {
     quiz_id: i32,
@@ -187,22 +194,22 @@ struct Quiz {
 impl IntoActive for Quiz {
     fn into_active(self) -> quizes::ActiveModel {
         let Quiz {
-            quiz_id,
             quiz,
             ans,
             level,
             diff,
             disc,
             lambdas,
+            ..
         } = self;
         quizes::ActiveModel {
-            qid: Set(quiz_id),
             quiz: Set(quiz),
             answer: Set(ans),
             group: Set(level),
             diff: Set(diff),
             disc: Set(disc),
             lambda: Set(lambdas),
+            ..Default::default()
         }
     }
 
