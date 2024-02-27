@@ -1,11 +1,9 @@
-use crate::entities::answer_record;
 use crate::{entities::children::Entity, utils::predict_correct::predict_correct_expr};
-use sea_orm::sea_query::Query;
-use sea_orm::ColumnTrait;
 use sea_orm::{
     sea_query::Expr, Condition, DbErr, DerivePartialModel, EntityTrait, FromQueryResult,
     QueryFilter, TransactionTrait,
 };
+use sea_orm::{Order, QueryOrder};
 use typed_builder::TypedBuilder;
 
 use super::ChildQuizService;
@@ -45,11 +43,11 @@ impl ChildQuizService {
         // get the quiz in the ability
         use crate::entities::quizes;
         mod local_quiz {
-            use crate::entities::prelude::Quizes;
+            use crate::entities::quizes::Entity;
             use sea_orm::DerivePartialModel;
             use sea_orm::FromQueryResult;
             #[derive(Debug, FromQueryResult, DerivePartialModel)]
-            #[sea_orm(entity = "Quizes")]
+            #[sea_orm(entity = "Entity")]
             pub(super) struct Quiz {
                 pub(super) qid: i32,
                 pub(super) quiz: String,
@@ -61,22 +59,22 @@ impl ChildQuizService {
                 Condition::all()
                     .add(
                         Expr::expr(predict_correct_expr(Expr::val(ability)))
-                            .gt(Expr::val(min_correct)),
+                            .gte(Expr::val(min_correct)),
                     )
                     .add(
                         Expr::expr(predict_correct_expr(Expr::val(ability)))
-                            .lt(Expr::val(max_correct)),
-                    )
-                    .add(
-                        Expr::col(quizes::Column::Qid).not_in_subquery(
-                            Query::select()
-                                .column(answer_record::Column::Qid)
-                                .from(answer_record::Entity)
-                                .and_where(answer_record::Column::Cid.eq(child_id))
-                                .take(),
-                        ),
-                    ),
+                            .lte(Expr::val(max_correct)),
+                    ), // .add(
+                       //     Expr::col(quizes::Column::Qid).not_in_subquery(
+                       //         Query::select()
+                       //             .column(answer_record::Column::Qid)
+                       //             .from(answer_record::Entity)
+                       //             .and_where(answer_record::Column::Cid.eq(child_id))
+                       //             .take(),
+                       //     ),
+                       // ),
             )
+            .order_by(Expr::cust("random()"), Order::Asc)
             .into_partial_model::<local_quiz::Quiz>()
             .one(&ctx)
             .await?;
@@ -103,7 +101,7 @@ mod test {
         .await
         .expect("cannot connect Db");
 
-        let quiz = ChildQuizService::next_quiz(&conn, 22, 0.5, 0.8)
+        let quiz = ChildQuizService::next_quiz(&conn, 22, 0.2, 1.0)
             .await
             .unwrap()
             .unwrap();
