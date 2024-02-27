@@ -1,7 +1,6 @@
 mod all_children;
 
 use crate::service::DatabaseServiceTrait;
-use sea_orm::{ConnectionTrait, TransactionTrait};
 
 pub struct ParentChildService<D>(D);
 
