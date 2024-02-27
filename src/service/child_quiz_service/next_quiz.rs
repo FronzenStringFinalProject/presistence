@@ -1,3 +1,4 @@
+use crate::service::DatabaseServiceTrait;
 use crate::{entities::children::Entity, utils::predict_correct::predict_correct_expr};
 use sea_orm::{
     sea_query::Expr, Condition, DbErr, DerivePartialModel, EntityTrait, FromQueryResult,
@@ -14,14 +15,14 @@ pub struct QuizFetched {
     pub quiz: String,
 }
 
-impl ChildQuizService {
+impl<D: TransactionTrait> ChildQuizService<D> {
     pub async fn next_quiz(
-        db: &impl TransactionTrait,
+        &self,
         child_id: i32,
         min_correct: f64,
         max_correct: f64,
     ) -> Result<Option<QuizFetched>, DbErr> {
-        let ctx = db.begin().await?;
+        let ctx = self.db().begin().await?;
 
         // get ability of child
         #[derive(Debug, FromQueryResult, DerivePartialModel)]
@@ -91,7 +92,7 @@ impl ChildQuizService {
 mod test {
     use sea_orm::{ConnectOptions, Database};
 
-    use crate::service::ChildQuizService;
+    use crate::service::{ChildQuizService, DatabaseServiceTrait};
 
     #[tokio::test]
     async fn test_get_quiz() {
@@ -101,7 +102,8 @@ mod test {
         .await
         .expect("cannot connect Db");
 
-        let quiz = ChildQuizService::next_quiz(&conn, 22, 0.2, 1.0)
+        let quiz = ChildQuizService::with_db(conn)
+            .next_quiz(22, 0.2, 1.0)
             .await
             .unwrap()
             .unwrap();

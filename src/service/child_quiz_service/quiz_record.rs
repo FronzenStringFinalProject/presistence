@@ -1,7 +1,9 @@
 use super::ChildQuizService;
 use crate::entities::{answer_record, children, prelude::*, quizes};
+use crate::service::DatabaseServiceTrait;
 use sea_orm::{
-    sea_query::Expr, DbErr, EntityTrait, FromQueryResult, QuerySelect, RelationTrait, StreamTrait,
+    sea_query::Expr, ConnectionTrait, DbErr, EntityTrait, FromQueryResult, QuerySelect,
+    RelationTrait, StreamTrait,
 };
 
 #[derive(Debug, FromQueryResult)]
@@ -16,9 +18,9 @@ pub struct ChildQuizAns {
     pub pred: f64,
 }
 
-impl ChildQuizService {
+impl<D: ConnectionTrait> ChildQuizService<D> {
     pub async fn get_ans_quiz_by_child_id(
-        conn: &(impl StreamTrait + sea_orm::ConnectionTrait),
+        &self,
         child_id: i32,
         number: u64,
     ) -> Result<Vec<ChildQuizAns>, DbErr> {
@@ -57,7 +59,7 @@ impl ChildQuizService {
             )
             .limit(number)
             .into_model::<ChildQuizAns>()
-            .all(conn)
+            .all(self.db())
             .await?;
 
         Ok(child)
@@ -116,6 +118,7 @@ mod test {
 
         println!("{sql}")
     }
+    use crate::service::DatabaseServiceTrait;
     use tokio;
 
     #[tokio::test]
@@ -126,7 +129,8 @@ mod test {
         .await
         .expect("cannot connect Db");
 
-        let ret = ChildQuizService::get_ans_quiz_by_child_id(&conn, 2, 25)
+        let ret = ChildQuizService::with_db(conn)
+            .get_ans_quiz_by_child_id(2, 25)
             .await
             .expect("Query Error");
 

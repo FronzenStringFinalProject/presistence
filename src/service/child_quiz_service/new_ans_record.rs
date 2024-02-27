@@ -3,17 +3,18 @@ use sea_orm::{
 };
 
 use crate::entities::{answer_record, quizes};
+use crate::service::DatabaseServiceTrait;
 
 use super::ChildQuizService;
 
-impl ChildQuizService {
+impl<D: TransactionTrait> ChildQuizService<D> {
     pub async fn new_ans_record(
-        db: &impl TransactionTrait,
+        &self,
         child_id: i32,
         quiz_id: i32,
         quiz_ans: i32,
     ) -> Result<bool, DbErr> {
-        let ctx = db.begin().await?;
+        let ctx = self.db().begin().await?;
 
         // check ans correct
         let correct = quizes::Entity::find_by_id(quiz_id)

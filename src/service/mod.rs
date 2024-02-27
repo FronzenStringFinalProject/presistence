@@ -1,5 +1,5 @@
-mod child_quiz_service;
-mod parent_child_service;
+pub mod child_quiz_service;
+pub mod parent_child_service;
 
 use async_trait::async_trait;
 use axum_core::extract::{FromRef, FromRequestParts};

@@ -1,5 +1,6 @@
 use crate::entities::prelude::{Children, QuizGroups};
 use crate::entities::{answer_record, children, quiz_groups, quizes};
+use crate::service::DatabaseServiceTrait;
 use sea_orm::sea_query::{Asterisk, Expr};
 use sea_orm::{
     ColumnTrait, Condition, ConnectionTrait, DbErr, DerivePartialModel, EntityTrait,
@@ -69,7 +70,7 @@ pub struct ChildStaticalItem {
     pub correct_rate: f64,
 }
 
-impl super::ChildQuizService {
+impl<D> super::ChildQuizService<D> {
     /// 孩子统计信息
     ///
     /// 统计内容
@@ -78,10 +79,13 @@ impl super::ChildQuizService {
     /// 3. 孩子的各个题型正确率
     /// 4. 孩子近期ability变化（TODO）
     pub async fn child_statical(
-        db: &impl ConnectionTrait,
+        &self,
         child_id: i32,
         resent: ResentType,
-    ) -> Result<Vec<ChildStaticalItem>, DbErr> {
+    ) -> Result<Vec<ChildStaticalItem>, DbErr>
+    where
+        D: ConnectionTrait,
+    {
         let query = Children::find_by_id(child_id)
             .filter(Condition::all().modify_filter(resent))
             .join(JoinType::Join, children::Relation::AnswerRecord.def())
@@ -90,7 +94,7 @@ impl super::ChildQuizService {
             .group_by(quiz_groups::Column::Gid)
             .add_limit(resent)
             .into_partial_model::<ChildStaticalItem>()
-            .all(db)
+            .all(self.db())
             .await?;
         Ok(query)
     }
@@ -98,8 +102,8 @@ impl super::ChildQuizService {
 
 #[cfg(test)]
 mod test {
-    use crate::service::child_statical::ResentType;
-    use crate::service::ChildQuizService;
+    use crate::service::child_quiz_service::child_statical::ResentType;
+    use crate::service::{ChildQuizService, DatabaseServiceTrait};
     use sea_orm::{ConnectOptions, Database};
 
     #[tokio::test]
@@ -110,7 +114,8 @@ mod test {
         .await
         .expect("cannot connect Db");
 
-        let ret = ChildQuizService::child_statical(&conn, 5, ResentType::Quiz(20))
+        let ret = ChildQuizService::with_db(conn)
+            .child_statical(5, ResentType::Quiz(20))
             .await
             .expect("error");
 

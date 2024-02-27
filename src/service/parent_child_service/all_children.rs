@@ -6,8 +6,8 @@ use sea_orm::{
     ColumnTrait, ConnectionTrait, DbErr, DerivePartialModel, EntityTrait, FromQueryResult,
     QueryFilter,
 };
-
-#[derive(Debug, FromQueryResult, DerivePartialModel)]
+use serde::Serialize;
+#[derive(Debug, FromQueryResult, DerivePartialModel, Serialize)]
 #[sea_orm(entity = "Children")]
 pub struct ChildItem {
     pub cid: i32,
