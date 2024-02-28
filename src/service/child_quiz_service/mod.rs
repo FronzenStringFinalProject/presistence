@@ -1,8 +1,8 @@
 use crate::service::DatabaseServiceTrait;
 use crate::PersistenceConnection;
 
-mod child_statical;
-mod new_ans_record;
+pub mod child_statical;
+pub mod new_ans_record;
 pub mod next_quiz;
 pub mod quiz_record;
 

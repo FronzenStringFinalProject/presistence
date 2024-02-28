@@ -3,7 +3,7 @@ use crate::entities::{answer_record, children, prelude::*, quizes};
 use crate::service::DatabaseServiceTrait;
 use sea_orm::{
     sea_query::Expr, ConnectionTrait, DbErr, EntityTrait, FromQueryResult, QuerySelect,
-    RelationTrait, StreamTrait,
+    RelationTrait,
 };
 
 #[derive(Debug, FromQueryResult)]

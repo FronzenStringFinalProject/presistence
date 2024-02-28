@@ -12,16 +12,19 @@ impl<D: TransactionTrait> ChildQuizService<D> {
         &self,
         child_id: i32,
         quiz_id: i32,
-        quiz_ans: i32,
+        quiz_ans: Option<i32>,
     ) -> Result<bool, DbErr> {
         let ctx = self.db().begin().await?;
-
-        // check ans correct
-        let correct = quizes::Entity::find_by_id(quiz_id)
-            .filter(quizes::Column::Answer.eq(quiz_ans))
-            .count(&ctx)
-            .await?
-            > 0;
+        let correct = if let Some(ans) = quiz_ans {
+            // check ans correct
+            quizes::Entity::find_by_id(quiz_id)
+                .filter(quizes::Column::Answer.eq(ans))
+                .count(&ctx)
+                .await?
+                > 0
+        } else {
+            false
+        };
 
         // write
         let active = answer_record::ActiveModel {
