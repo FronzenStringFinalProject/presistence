@@ -1,7 +1,7 @@
 pub mod all_children;
 
-use crate::PersistenceConnection;
 use crate::service::DatabaseServiceTrait;
+use crate::PersistenceConnection;
 
 pub struct ParentChildService<D = PersistenceConnection>(D);
 
