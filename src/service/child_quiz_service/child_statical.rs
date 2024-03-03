@@ -4,7 +4,7 @@ use crate::service::DatabaseServiceTrait;
 use sea_orm::sea_query::{Asterisk, Expr};
 use sea_orm::{
     ColumnTrait, Condition, ConnectionTrait, DbErr, DerivePartialModel, EntityTrait,
-    FromQueryResult, JoinType, QueryFilter, QuerySelect, RelationTrait, Select, Value,
+    FromQueryResult, JoinType, QueryFilter, QueryOrder, QuerySelect, RelationTrait, Select, Value,
 };
 use serde::Serialize;
 
@@ -136,6 +136,7 @@ where
             )
             .group_by(answer_record::Column::Date)
             .add_limit(resent)
+            .order_by_asc(answer_record::Column::Date)
             .into_partial_model::<ChildResentCorrectStaticalItem>()
             .all(self.db())
             .await?;
