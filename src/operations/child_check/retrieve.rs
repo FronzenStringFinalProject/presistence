@@ -63,8 +63,9 @@ impl Retrieve {
         db: &impl ConnectionTrait,
         child_id: i32,
         month: Option<i32>,
+        year: Option<i32>,
     ) -> Result<Vec<MonthlyCheckItem>, DbErr> {
-        let condition = if let Some(month) = month {
+        let month_condition = if let Some(month) = month {
             Expr::cust_with_exprs(
                 "DATE_PART('month', $1) = $2",
                 [
@@ -79,11 +80,27 @@ impl Retrieve {
             )
         };
 
+        let year_condition = if let Some(year) = year {
+            Expr::cust_with_exprs(
+                "DATE_PART('year', $1) = $2",
+                [
+                    model::Column::Date.into_simple_expr(),
+                    Expr::val(year as f64).into_simple_expr(),
+                ],
+            )
+        } else {
+            Expr::cust_with_expr(
+                "DATE_PART('year', $1) = DATE_PART('year', current_timestamp)",
+                model::Column::Date.into_simple_expr(),
+            )
+        };
+
         model::Entity::find()
             .filter(
                 Condition::all()
                     .add(model::Column::Cid.eq(child_id))
-                    .add(condition),
+                    .add(month_condition)
+                    .add(year_condition),
             )
             .into_partial_model::<MonthlyCheckItem>()
             .all(db)
