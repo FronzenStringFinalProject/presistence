@@ -119,7 +119,6 @@ impl IntoActive for AnswerRecord {
 
 #[derive(Debug, Deserialize)]
 struct Child {
-    cid: i32,
     name: String,
     parent_id: i32,
     ability: f64,
@@ -146,7 +145,6 @@ impl IntoActive for Child {
 
 #[derive(Debug, Deserialize)]
 struct Parent {
-    pid: i32,
     name: String,
 }
 
@@ -164,7 +162,6 @@ impl IntoActive for Parent {
 
 #[derive(Debug, Deserialize)]
 struct QuizLevel {
-    level_id: i32,
     name: String,
 }
 
@@ -182,7 +179,6 @@ impl IntoActive for QuizLevel {
 
 #[derive(Debug, Deserialize)]
 struct Quiz {
-    quiz_id: i32,
     quiz: String,
     ans: i32,
     level: i32,
@@ -192,6 +188,8 @@ struct Quiz {
 }
 
 impl IntoActive for Quiz {
+    type Active = quizes::ActiveModel;
+
     fn into_active(self) -> quizes::ActiveModel {
         let Quiz {
             quiz,
@@ -212,6 +210,4 @@ impl IntoActive for Quiz {
             ..Default::default()
         }
     }
-
-    type Active = quizes::ActiveModel;
 }
