@@ -1,5 +1,5 @@
 pub mod child_quiz_service;
-mod child_social;
+pub mod child_social;
 pub mod parent_child_service;
 
 use async_trait::async_trait;

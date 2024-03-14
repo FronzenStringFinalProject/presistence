@@ -14,3 +14,4 @@ impl<D> DatabaseServiceTrait<D> for ChildSocialService<D> {
         &self.0
     }
 }
+pub use child_scrod::ChildScore;
