@@ -3,9 +3,8 @@ use crate::output_models::child_check::MonthlyCheckItem;
 use sea_orm::prelude::Expr;
 use sea_orm::sea_query::{Asterisk, Query};
 use sea_orm::{
-    ColumnTrait, Condition, ConnectionTrait, DbErr, DeriveIden, EntityTrait, FromQueryResult,
-    Identity, IntoSimpleExpr, Order, PaginatorTrait, QueryFilter, QuerySelect, QueryTrait, Select,
-    SelectColumns, StatementBuilder,
+    ColumnTrait, Condition, ConnectionTrait, DbErr, DeriveIden, EntityTrait, IntoSimpleExpr, Order,
+    PaginatorTrait, QueryFilter, QuerySelect, QueryTrait, SelectColumns, StatementBuilder,
 };
 
 impl Retrieve {
