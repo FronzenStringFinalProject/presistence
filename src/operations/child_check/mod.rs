@@ -1,3 +1,4 @@
+mod insert;
 mod retrieve;
 
 use crate::db_operate;
