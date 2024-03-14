@@ -42,6 +42,7 @@ impl PrimaryKeyTrait for PrimaryKey {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     AnswerRecord,
+    ChildCheck,
     Parent,
 }
 
@@ -61,6 +62,7 @@ impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::AnswerRecord => Entity::has_many(super::answer_record::Entity).into(),
+            Self::ChildCheck => Entity::has_many(super::child_check::Entity).into(),
             Self::Parent => Entity::belongs_to(super::parent::Entity)
                 .from(Column::Parent)
                 .to(super::parent::Column::Pid)
@@ -72,6 +74,12 @@ impl RelationTrait for Relation {
 impl Related<super::answer_record::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::AnswerRecord.def()
+    }
+}
+
+impl Related<super::child_check::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ChildCheck.def()
     }
 }
 
