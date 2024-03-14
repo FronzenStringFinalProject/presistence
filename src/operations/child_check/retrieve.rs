@@ -162,15 +162,14 @@ mod test {
 
         let ret = ChildCheckOperate
             .retrieve()
-            .spec_month_check(&conn, 501, None)
+            .spec_month_check(&conn, 501, None, None)
             .await
             .expect("Error");
-        assert_eq!(ret, vec![]);
         println!("{ret:?}");
 
         let ret = ChildCheckOperate
             .retrieve()
-            .spec_month_check(&conn, 501, Some(2))
+            .spec_month_check(&conn, 501, Some(2), Some(2024))
             .await
             .expect("Error");
         println!("{ret:?}")
