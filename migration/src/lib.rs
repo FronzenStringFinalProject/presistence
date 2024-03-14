@@ -7,6 +7,7 @@ mod m20240207_184348_create_answer_record_table;
 mod m20240209_142558_insert_records;
 mod m20240213_020340_add_parent_authorize;
 mod m20240215_022426_parent_add_pwd_version;
+mod m20240314_033251_fix_quiz_ploblem;
 
 pub struct Migrator;
 
@@ -21,6 +22,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240209_142558_insert_records::Migration),
             Box::new(m20240213_020340_add_parent_authorize::Migration),
             Box::new(m20240215_022426_parent_add_pwd_version::Migration),
+            Box::new(m20240314_033251_fix_quiz_ploblem::Migration),
         ]
     }
 }
