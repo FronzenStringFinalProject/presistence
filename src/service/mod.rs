@@ -1,4 +1,5 @@
 pub mod child_quiz_service;
+mod child_social;
 pub mod parent_child_service;
 
 use async_trait::async_trait;
@@ -7,6 +8,7 @@ use http::request::Parts;
 use std::convert::Infallible;
 
 pub use child_quiz_service::ChildQuizService;
+pub use child_social::ChildSocialService;
 pub use parent_child_service::ParentChildService;
 
 pub trait DatabaseServiceTrait<D> {
