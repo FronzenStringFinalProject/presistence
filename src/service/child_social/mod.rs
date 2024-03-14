@@ -1,9 +1,9 @@
-use crate::PersistenceConnection;
 use crate::service::DatabaseServiceTrait;
+use crate::PersistenceConnection;
 
 mod child_scrod;
 
-pub struct ChildSocialService<D=PersistenceConnection>(D);
+pub struct ChildSocialService<D = PersistenceConnection>(D);
 
 impl<D> DatabaseServiceTrait<D> for ChildSocialService<D> {
     fn with_db(db: D) -> Self {
@@ -14,4 +14,3 @@ impl<D> DatabaseServiceTrait<D> for ChildSocialService<D> {
         &self.0
     }
 }
-
