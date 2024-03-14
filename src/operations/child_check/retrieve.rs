@@ -14,6 +14,8 @@ impl Retrieve {
     /// - https://ikddm.com/868.html/
     /// - https://www.postgresql.org/docs/current/datatype-numeric.html
     /// - https://www.postgresql.org/docs/current/functions-window.html
+    ///
+    /// FIXME: 连续打卡为从今天开始往前计算
     pub async fn continual_check_days(
         &self,
         db: &impl ConnectionTrait,
