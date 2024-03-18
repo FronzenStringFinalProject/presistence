@@ -8,6 +8,18 @@ use sea_orm::{
 };
 
 impl Retrieve {
+    pub async fn can_check(&self, db: &impl ConnectionTrait, child_id: i32) -> Result<bool, DbErr> {
+        Ok(model::Entity::find()
+            .filter(
+                Condition::all()
+                    .add(model::Column::Cid.eq(child_id))
+                    .add(Expr::col(model::Column::Date).eq(Expr::cust("DATE(now())"))),
+            )
+            .count(db)
+            .await?
+            == 0)
+    }
+
     ///
     /// 获取连续打卡天数
     /// 参考：
