@@ -4,6 +4,7 @@ pub mod prelude;
 
 pub mod answer_record;
 pub mod child_check;
+pub mod child_quiz_group;
 pub mod children;
 pub mod parent;
 pub mod quiz_groups;

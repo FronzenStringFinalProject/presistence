@@ -43,6 +43,7 @@ impl PrimaryKeyTrait for PrimaryKey {
 pub enum Relation {
     AnswerRecord,
     ChildCheck,
+    ChildQuizGroup,
     Parent,
 }
 
@@ -63,6 +64,7 @@ impl RelationTrait for Relation {
         match self {
             Self::AnswerRecord => Entity::has_many(super::answer_record::Entity).into(),
             Self::ChildCheck => Entity::has_many(super::child_check::Entity).into(),
+            Self::ChildQuizGroup => Entity::has_many(super::child_quiz_group::Entity).into(),
             Self::Parent => Entity::belongs_to(super::parent::Entity)
                 .from(Column::Parent)
                 .to(super::parent::Column::Pid)
@@ -83,18 +85,24 @@ impl Related<super::child_check::Entity> for Entity {
     }
 }
 
+impl Related<super::child_quiz_group::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ChildQuizGroup.def()
+    }
+}
+
 impl Related<super::parent::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Parent.def()
     }
 }
 
-impl Related<super::quizes::Entity> for Entity {
+impl Related<super::quiz_groups::Entity> for Entity {
     fn to() -> RelationDef {
-        super::answer_record::Relation::Quizes.def()
+        super::child_quiz_group::Relation::QuizGroups.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::answer_record::Relation::Children.def().rev())
+        Some(super::child_quiz_group::Relation::Children.def().rev())
     }
 }
 

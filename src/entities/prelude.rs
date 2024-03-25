@@ -2,6 +2,7 @@
 
 pub use super::answer_record::Entity as AnswerRecord;
 pub use super::child_check::Entity as ChildCheck;
+pub use super::child_quiz_group::Entity as ChildQuizGroup;
 pub use super::children::Entity as Children;
 pub use super::parent::Entity as Parent;
 pub use super::quiz_groups::Entity as QuizGroups;

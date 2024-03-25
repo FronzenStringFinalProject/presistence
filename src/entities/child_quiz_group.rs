@@ -7,46 +7,47 @@ pub struct Entity;
 
 impl EntityName for Entity {
     fn table_name(&self) -> &str {
-        "quiz_groups"
+        "child_quiz_group"
     }
 }
 
 #[derive(Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Eq)]
 pub struct Model {
+    pub cid: i32,
     pub gid: i32,
-    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
+    Cid,
     Gid,
-    Name,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
 pub enum PrimaryKey {
+    Cid,
     Gid,
 }
 
 impl PrimaryKeyTrait for PrimaryKey {
-    type ValueType = i32;
+    type ValueType = (i32, i32);
     fn auto_increment() -> bool {
-        true
+        false
     }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    ChildQuizGroup,
-    Quizes,
+    Children,
+    QuizGroups,
 }
 
 impl ColumnTrait for Column {
     type EntityName = Entity;
     fn def(&self) -> ColumnDef {
         match self {
+            Self::Cid => ColumnType::Integer.def(),
             Self::Gid => ColumnType::Integer.def(),
-            Self::Name => ColumnType::String(Some(255u32)).def().unique(),
         }
     }
 }
@@ -54,30 +55,27 @@ impl ColumnTrait for Column {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::ChildQuizGroup => Entity::has_many(super::child_quiz_group::Entity).into(),
-            Self::Quizes => Entity::has_many(super::quizes::Entity).into(),
+            Self::Children => Entity::belongs_to(super::children::Entity)
+                .from(Column::Cid)
+                .to(super::children::Column::Cid)
+                .into(),
+            Self::QuizGroups => Entity::belongs_to(super::quiz_groups::Entity)
+                .from(Column::Gid)
+                .to(super::quiz_groups::Column::Gid)
+                .into(),
         }
-    }
-}
-
-impl Related<super::child_quiz_group::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ChildQuizGroup.def()
-    }
-}
-
-impl Related<super::quizes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Quizes.def()
     }
 }
 
 impl Related<super::children::Entity> for Entity {
     fn to() -> RelationDef {
-        super::child_quiz_group::Relation::Children.def()
+        Relation::Children.def()
     }
-    fn via() -> Option<RelationDef> {
-        Some(super::child_quiz_group::Relation::QuizGroups.def().rev())
+}
+
+impl Related<super::quiz_groups::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::QuizGroups.def()
     }
 }
 
