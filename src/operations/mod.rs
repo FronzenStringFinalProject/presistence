@@ -1,5 +1,6 @@
 mod answer_record;
 mod child_check;
+mod child_quiz_group;
 mod children;
 mod parent;
 

@@ -1,8 +1,9 @@
+use crate::entities::child_quiz_group;
 use crate::service::DatabaseServiceTrait;
-use crate::{entities::children::Entity, utils::predict_correct::predict_correct_expr};
+use crate::{entities::children, utils::predict_correct::predict_correct_expr};
 use sea_orm::{
-    sea_query::Expr, Condition, DbErr, DerivePartialModel, EntityTrait, FromQueryResult,
-    QueryFilter, TransactionTrait,
+    sea_query::Expr, ColumnTrait, Condition, DbErr, DerivePartialModel, EntityTrait,
+    FromQueryResult, QueryFilter, QuerySelect, QueryTrait, TransactionTrait,
 };
 use sea_orm::{Order, QueryOrder};
 use typed_builder::TypedBuilder;
@@ -26,12 +27,12 @@ impl<D: TransactionTrait> ChildQuizService<D> {
 
         // get ability of child
         #[derive(Debug, FromQueryResult, DerivePartialModel)]
-        #[sea_orm(entity = "Entity")]
+        #[sea_orm(entity = "children::Entity")]
         struct ChildAbility {
             ability: f64,
         }
 
-        let child = Entity::find_by_id(child_id)
+        let child = children::Entity::find_by_id(child_id)
             .into_partial_model::<ChildAbility>()
             .one(&ctx)
             .await?
@@ -43,16 +44,11 @@ impl<D: TransactionTrait> ChildQuizService<D> {
 
         // get the quiz in the ability
         use crate::entities::quizes;
-        mod local_quiz {
-            use crate::entities::quizes::Entity;
-            use sea_orm::DerivePartialModel;
-            use sea_orm::FromQueryResult;
-            #[derive(Debug, FromQueryResult, DerivePartialModel)]
-            #[sea_orm(entity = "Entity")]
-            pub(super) struct Quiz {
-                pub(super) qid: i32,
-                pub(super) quiz: String,
-            }
+        #[derive(Debug, FromQueryResult, DerivePartialModel)]
+        #[sea_orm(entity = "quizes::Entity")]
+        pub(super) struct Quiz {
+            pub(super) qid: i32,
+            pub(super) quiz: String,
         }
 
         let ret = quizes::Entity::find()
@@ -65,6 +61,15 @@ impl<D: TransactionTrait> ChildQuizService<D> {
                     .add(
                         Expr::expr(predict_correct_expr(Expr::val(ability)))
                             .lte(Expr::val(max_correct)),
+                    )
+                    .add(
+                        quizes::Column::Group.in_subquery(
+                            child_quiz_group::Entity::find()
+                                .filter(child_quiz_group::Column::Cid.eq(child_id))
+                                .select_only()
+                                .column(child_quiz_group::Column::Gid)
+                                .into_query(),
+                        ),
                     ), // .add(
                        //     Expr::col(quizes::Column::Qid).not_in_subquery(
                        //         Query::select()
@@ -76,11 +81,11 @@ impl<D: TransactionTrait> ChildQuizService<D> {
                        // ),
             )
             .order_by(Expr::cust("random()"), Order::Asc)
-            .into_partial_model::<local_quiz::Quiz>()
+            .into_partial_model::<Quiz>()
             .one(&ctx)
             .await?;
 
-        let Some(local_quiz::Quiz { qid, quiz }) = ret else {
+        let Some(Quiz { qid, quiz }) = ret else {
             return Ok(None);
         };
         ctx.commit().await?;
@@ -103,7 +108,7 @@ mod test {
         .expect("cannot connect Db");
 
         let quiz = ChildQuizService::with_db(conn)
-            .next_quiz(22, 0.2, 1.0)
+            .next_quiz(501, 0.2, 1.0)
             .await
             .unwrap()
             .unwrap();
