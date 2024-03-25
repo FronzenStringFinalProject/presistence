@@ -6,6 +6,7 @@ mod parent;
 
 pub use answer_record::AnswerRecordOperate;
 pub use child_check::ChildCheckOperate;
+pub use child_quiz_group::ChildQuizGroupOperate;
 pub use children::ChildrenOperate;
 pub use parent::ParentOperate;
 pub trait OperateTrait {
