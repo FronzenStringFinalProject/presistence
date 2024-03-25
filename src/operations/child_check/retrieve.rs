@@ -1,11 +1,13 @@
-use super::{model, Retrieve};
-use crate::output_models::child_check::MonthlyCheckItem;
 use sea_orm::prelude::Expr;
 use sea_orm::sea_query::{Asterisk, Query};
 use sea_orm::{
-    ColumnTrait, Condition, ConnectionTrait, DbErr, DeriveIden, EntityTrait, IntoSimpleExpr, Order,
+    ColumnTrait, Condition, ConnectionTrait, DbErr, DeriveIden, EntityTrait, IntoSimpleExpr,
     PaginatorTrait, QueryFilter, QuerySelect, QueryTrait, SelectColumns, StatementBuilder,
 };
+
+use crate::output_models::child_check::MonthlyCheckItem;
+
+use super::{model, Retrieve};
 
 impl Retrieve {
     pub async fn can_check(&self, db: &impl ConnectionTrait, child_id: i32) -> Result<bool, DbErr> {
@@ -27,18 +29,32 @@ impl Retrieve {
     /// - https://www.postgresql.org/docs/current/datatype-numeric.html
     /// - https://www.postgresql.org/docs/current/functions-window.html
     ///
-    /// FIXME: 连续打卡为从今天开始往前计算
+    ///
+    /// ```sql no-run
+    /// select count(*) from (
+    ///     SELECT
+    ///     DATE(Now())
+    ///         -date
+    ///         +CAST(ROW_NUMBER() OVER(PARTITION BY cid ORDER BY date) as INT4) as ii,
+    ///     CAST(ROW_NUMBER() OVER(PARTITION BY cid ORDER BY date) as INT4) as iii
+    ///     FROM public.child_check where cid = 501
+    /// )
+    /// group by ii
+    /// having ii-max(iii) =0
+    /// ```
     pub async fn continual_check_days(
         &self,
         db: &impl ConnectionTrait,
         child_id: i32,
-    ) -> Result<Option<i64>, DbErr> {
+    ) -> Result<i64, DbErr> {
+        const DIFF_COLUMN: &str = "diff";
+        const DAYS_FROM_TODAY: &str = "days_from_today";
         let sub_select = model::Entity::find()
             .filter(model::Column::Cid.eq(child_id))
             .select_only()
             .select_column_as(
                 Expr::cust_with_exprs(
-                    "$1 - CAST(ROW_NUMBER() OVER(PARTITION BY $2 ORDER BY $1) as INT4)",
+                    "CAST(ROW_NUMBER() OVER(PARTITION BY $2 ORDER BY $1) as INT4)",
                     [model::Column::Date, model::Column::Cid]
                         .into_iter()
                         .map(Expr::col)
@@ -46,24 +62,36 @@ impl Retrieve {
                 ),
                 DIFF_COLUMN,
             )
+            .select_column_as(Expr::cust_with_exprs(
+                "DATE(NOW()) - $1 + CAST(ROW_NUMBER() OVER(PARTITION BY $2 ORDER BY $1) as INT4)",
+                [model::Column::Date, model::Column::Cid]
+                    .into_iter()
+                    .map(Expr::col)
+                    .map(|expr| expr.into_simple_expr()),
+            ),DAYS_FROM_TODAY)
             .into_query();
 
         let stmt = Query::select()
-            .column(DiffSubSelect::Diff)
             .expr_as(Expr::col(Asterisk).count(), DiffSubSelect::ContinualDays)
             .from_subquery(sub_select, DiffSubSelect::Table)
-            .group_by_col(DiffSubSelect::Diff)
-            .order_by(DiffSubSelect::Diff, Order::Desc)
+            .group_by_col(DiffSubSelect::DaysFromToday)
+            .and_having(
+                Expr::col(DiffSubSelect::DaysFromToday).sub(Expr::col(DiffSubSelect::Diff).max()),
+            )
             .limit(1)
             .take();
 
         let stmt = StatementBuilder::build(&stmt, &db.get_database_backend());
 
+        #[cfg(test)]
+        println!("{:?}", stmt.to_string());
+
         let ret = db
             .query_one(stmt)
             .await?
             .map(|result| result.try_get("", "continual_days"))
-            .transpose()?;
+            .transpose()?
+            .unwrap_or(0);
 
         Ok(ret)
     }
@@ -137,17 +165,16 @@ impl Retrieve {
 enum DiffSubSelect {
     Table,
     Diff,
+    DaysFromToday,
     ContinualDays,
 }
 
-const DIFF_COLUMN: &str = "diff";
-
 #[cfg(test)]
 mod test {
+    use sea_orm::{ConnectOptions, Database};
+
     use crate::operations::child_check::ChildCheckOperate;
     use crate::operations::OperateTrait;
-
-    use sea_orm::{ConnectOptions, Database};
 
     #[tokio::test]
     async fn test_continual_days() {
@@ -163,7 +190,7 @@ mod test {
             .await
             .expect("Error");
 
-        assert_eq!(days, Some(3));
+        assert_eq!(days, 3);
     }
 
     #[tokio::test]
