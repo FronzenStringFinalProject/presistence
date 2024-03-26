@@ -1,5 +1,6 @@
 use sea_orm::{
-    ColumnTrait, DbErr, EntityTrait, FromQueryResult, QueryFilter, QuerySelect, QueryTrait,
+    ColumnTrait, DbErr, EntityTrait, FromQueryResult, QueryFilter, QueryOrder, QuerySelect,
+    QueryTrait,
 };
 use serde::Serialize;
 
@@ -26,6 +27,7 @@ impl super::ChildQuizService {
                 quiz_groups::Column::Gid.in_subquery(select_child_gid),
                 "select",
             )
+            .order_by_asc(quiz_groups::Column::Gid)
             .into_model::<QuizGroupItem>()
             .all(self.db())
             .await

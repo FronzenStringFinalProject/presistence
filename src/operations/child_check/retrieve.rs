@@ -76,7 +76,9 @@ impl Retrieve {
             .from_subquery(sub_select, DiffSubSelect::Table)
             .group_by_col(DiffSubSelect::DaysFromToday)
             .and_having(
-                Expr::col(DiffSubSelect::DaysFromToday).sub(Expr::col(DiffSubSelect::Diff).max()),
+                Expr::col(DiffSubSelect::DaysFromToday)
+                    .sub(Expr::col(DiffSubSelect::Diff).max())
+                    .eq(0),
             )
             .limit(1)
             .take();
