@@ -6,6 +6,7 @@ pub mod fetch_quiz_group;
 pub mod new_ans_record;
 pub mod next_quiz;
 pub mod quiz_record;
+mod wrong_records;
 
 pub struct ChildQuizService<D = PersistenceConnection>(D);
 
