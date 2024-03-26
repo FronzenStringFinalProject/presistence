@@ -1,8 +1,8 @@
-use sea_orm::{
-    ConnectionTrait, DbErr, DeriveIden, EntityTrait, FromQueryResult, Iden,
-    IntoSimpleExpr, QueryFilter, QuerySelect, QueryTrait, StatementBuilder,
-};
 use sea_orm::sea_query::{Expr, PostgresQueryBuilder, Query, SelectStatement};
+use sea_orm::{
+    ConnectionTrait, DbErr, DeriveIden, EntityTrait, FromQueryResult, Iden, IntoSimpleExpr,
+    QueryFilter, QuerySelect, QueryTrait, StatementBuilder,
+};
 
 use crate::entities::{answer_record, child_check};
 use crate::service::DatabaseServiceTrait;
