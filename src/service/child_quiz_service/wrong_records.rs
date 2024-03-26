@@ -1,5 +1,3 @@
-use crate::entities::{answer_record, quiz_groups, quizes};
-use crate::service::DatabaseServiceTrait;
 use chrono::NaiveDate;
 use sea_orm::prelude::Expr;
 use sea_orm::{
@@ -7,6 +5,9 @@ use sea_orm::{
     IntoSimpleExpr, JoinType, QueryFilter, QueryOrder, QuerySelect, RelationTrait,
 };
 use serde::Serialize;
+
+use crate::entities::{answer_record, quiz_groups, quizes};
+use crate::service::DatabaseServiceTrait;
 
 #[derive(Debug, FromQueryResult, Serialize, DerivePartialModel)]
 #[sea_orm(entity = "answer_record::Entity")]
@@ -50,5 +51,27 @@ impl super::ChildQuizService {
             .await?;
 
         Ok(ret)
+    }
+}
+#[cfg(test)]
+mod test {
+    use sea_orm::{ConnectOptions, Database};
+
+    use crate::service::{ChildQuizService, DatabaseServiceTrait};
+
+    #[tokio::test]
+    async fn test_get_rank() {
+        let conn = Database::connect(ConnectOptions::new(
+            "postgres://JACKY:wyq020222@localhost/quiz-evaluate",
+        ))
+        .await
+        .expect("cannot connect Db");
+
+        let a = ChildQuizService::with_db(conn)
+            .get_wrong_quiz_list(311)
+            .await
+            .expect("ERR");
+
+        println!("{a:?}")
     }
 }

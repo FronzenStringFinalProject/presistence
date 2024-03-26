@@ -1,6 +1,7 @@
 use crate::service::DatabaseServiceTrait;
 use crate::PersistenceConnection;
 
+mod child_rank;
 mod child_scrod;
 
 pub struct ChildSocialService<D = PersistenceConnection>(D);
