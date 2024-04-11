@@ -3,6 +3,7 @@ use sea_orm::{
     ConnectionTrait, DbErr, DeriveIden, EntityTrait, FromQueryResult, Iden, IntoSimpleExpr,
     QueryFilter, QuerySelect, QueryTrait, StatementBuilder,
 };
+use serde::Serialize;
 
 use crate::entities::{answer_record, child_check};
 use crate::service::DatabaseServiceTrait;
@@ -15,7 +16,7 @@ enum RankTmpTable {
     RankRange,
 }
 
-#[derive(Debug, FromQueryResult)]
+#[derive(Debug, FromQueryResult, Serialize)]
 pub struct ChildRank {
     pub rank: i64,
     pub rank_range: f64,
