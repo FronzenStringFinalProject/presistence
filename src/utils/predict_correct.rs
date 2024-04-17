@@ -28,6 +28,8 @@ pub fn predict_correct_expr(ability: Expr) -> SimpleExpr {
 ///     as Int4
 /// )
 /// ```
+///
+/// https://www.postgresql.org/docs/current/functions-math.html
 pub fn score_update(with_correct: bool) -> SimpleExpr {
     Expr::cust_with_exprs(
         "CAST(ROUND((1 - $1) * 50 + 75) * $2 AS INT4)",
