@@ -113,6 +113,7 @@ impl IntoActive for AnswerRecord {
             qid: Set(qid - 390),
             correct: Set(correct),
             date: Set(record_time),
+            ..Default::default()
         }
     }
 }

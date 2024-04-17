@@ -17,6 +17,7 @@ pub struct Model {
     pub cid: i32,
     pub correct: bool,
     pub date: Date,
+    pub quiz_score: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -25,6 +26,7 @@ pub enum Column {
     Cid,
     Correct,
     Date,
+    QuizScore,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -55,6 +57,7 @@ impl ColumnTrait for Column {
             Self::Cid => ColumnType::Integer.def(),
             Self::Correct => ColumnType::Boolean.def(),
             Self::Date => ColumnType::Date.def(),
+            Self::QuizScore => ColumnType::Integer.def(),
         }
     }
 }

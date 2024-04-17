@@ -11,6 +11,7 @@ mod m20240314_033251_fix_quiz_ploblem;
 mod m20240314_090754_child_check_create;
 mod m20240325_022626_child_select_quiz_group_crate;
 mod m20240415_100440_update_safty_pwd;
+mod m20240417_005652_ans_score;
 
 pub struct Migrator;
 
@@ -29,6 +30,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240314_090754_child_check_create::Migration),
             Box::new(m20240325_022626_child_select_quiz_group_crate::Migration),
             Box::new(m20240415_100440_update_safty_pwd::Migration),
+            Box::new(m20240417_005652_ans_score::Migration),
         ]
     }
 }
