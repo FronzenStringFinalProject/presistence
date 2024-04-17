@@ -48,7 +48,7 @@ mod test {
         .expect("cannot connect Db");
 
         let ret = ChildSocialService::with_db(conn)
-            .get_child_score(503)
+            .get_child_score(501)
             .await
             .expect("Query Error");
 

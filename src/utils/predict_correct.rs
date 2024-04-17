@@ -30,7 +30,7 @@ pub fn predict_correct_expr(ability: Expr) -> SimpleExpr {
 /// ```
 pub fn score_update(with_correct: bool) -> SimpleExpr {
     Expr::cust_with_exprs(
-        "CAST(ROUND((1 - $2) * 50 + 75) * $3 AS INT4)",
+        "CAST(ROUND((1 - $1) * 50 + 75) * $2 AS INT4)",
         [
             predict_correct_expr(children::Column::Ability.into_expr()),
             if with_correct {
