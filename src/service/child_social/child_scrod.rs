@@ -1,21 +1,21 @@
-use crate::entities::children;
+use sea_orm::sea_query::Expr;
+use sea_orm::{
+    ColumnTrait, DbErr, DerivePartialModel, EntityTrait, FromQueryResult, JoinType, QuerySelect,
+    RelationTrait,
+};
+
+use crate::entities::{answer_record, children};
 use crate::service::child_social::ChildSocialService;
 use crate::service::DatabaseServiceTrait;
-use sea_orm::sea_query::{Asterisk, Expr};
-use sea_orm::{
-    DbErr, DerivePartialModel, EntityTrait, FromQueryResult, JoinType, QuerySelect, RelationTrait,
-};
 
 #[derive(Debug, FromQueryResult, DerivePartialModel, Default)]
 pub struct ChildScore {
-    #[sea_orm(from_expr = "Expr::col(Asterisk).count().mul(Expr::value(100))")]
+    #[sea_orm(from_expr = "answer_record::Column::QuizScore.sum()")]
     pub total_score: i64,
-    #[sea_orm(from_expr = "Expr::col(Asterisk).count().mul(Expr::value(100))\
-        .div(Expr::val(1000))")]
+    #[sea_orm(from_expr = "answer_record::Column::QuizScore.sum().div(Expr::val(1000))")]
     pub current_level: i64,
     #[sea_orm(
-        from_expr = "Expr::expr(Expr::col(Asterisk).count().mul(Expr::value(100)))\
-    .modulo(Expr::val(1000))"
+        from_expr = "Expr::expr(answer_record::Column::QuizScore.sum()).modulo(Expr::val(1000))"
     )]
     pub current_level_score: i64,
 }
@@ -34,9 +34,10 @@ impl ChildSocialService {
 
 #[cfg(test)]
 mod test {
+    use sea_orm::{ConnectOptions, Database};
+
     use crate::service::child_social::ChildSocialService;
     use crate::service::DatabaseServiceTrait;
-    use sea_orm::{ConnectOptions, Database};
 
     #[tokio::test]
     async fn test_query() {
