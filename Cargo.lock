@@ -410,9 +410,9 @@ dependencies = [
 
 [[package]]
 name = "axum-starter"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76797dad62e53b93d632ce32825bd61a2eb44d4b65f3a709a39c52b045e0822d"
+checksum = "e7c48763bcbe417fb668673c0b82f68219928a1b6256f2e5825ccbdce584f08a"
 dependencies = [
  "axum",
  "axum-starter-macro",
@@ -428,9 +428,9 @@ dependencies = [
 
 [[package]]
 name = "axum-starter-macro"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ee24d57a5ca922ac809c26406a9091518e94543a783dbd85af177633a2bdf76"
+checksum = "af835e7d2b74e4f26148057e958527381d46603bac920c824f55b12861b40edc"
 dependencies = [
  "darling",
  "heck 0.4.1",

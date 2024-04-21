@@ -1,4 +1,5 @@
 use super::model;
+use crate::output_models::answer_record::AnsRecordItem;
 use sea_orm::prelude::Date;
 use sea_orm::sea_query::{Asterisk, Expr, SimpleExpr};
 use sea_orm::{
@@ -43,5 +44,39 @@ impl super::Retrieve {
             .into_iter()
             .map(|LastYearRecordItem { date, number }| (date, number))
             .collect())
+    }
+
+    pub async fn all_child_records(
+        &self,
+        db: &impl ConnectionTrait,
+    ) -> Result<Vec<AnsRecordItem>, DbErr> {
+        model::Entity::find()
+            .group_by(model::Column::Cid)
+            .into_partial_model()
+            .all(db)
+            .await
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::operations::{AnswerRecordOperate, OperateTrait};
+    use sea_orm::{ConnectOptions, Database};
+    #[tokio::test]
+    async fn test_get_all_child_record() {
+        let conn = Database::connect(ConnectOptions::new(
+            "postgres://JACKY:wyq020222@localhost/quiz-evaluate",
+        ))
+        .await
+        .expect("cannot connect Db");
+
+        let output = AnswerRecordOperate
+            .retrieve()
+            .all_child_records(&conn)
+            .await
+            .expect("Db Error");
+
+        println!("{}", output.len());
+        println!("{}", output[0].answered_quiz.len())
     }
 }
