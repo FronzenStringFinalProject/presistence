@@ -1,10 +1,7 @@
-use sea_orm::sea_query::{
-    Alias, Asterisk, Expr, PostgresQueryBuilder, Query, SelectStatement, SimpleExpr,
-};
+use sea_orm::sea_query::{Asterisk, Expr, Query, SelectStatement, SimpleExpr};
 use sea_orm::{
     ColumnTrait, Condition, ConnectionTrait, DbBackend, DbErr, DeriveIden, EntityTrait,
-    FromQueryResult, Iden, IntoSimpleExpr, JoinType, QueryFilter, QuerySelect, QueryTrait, Related,
-    Statement, StatementBuilder,
+    FromQueryResult, JoinType, QuerySelect, QueryTrait, Related, Statement, StatementBuilder,
 };
 use serde::Serialize;
 
@@ -123,9 +120,9 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::entities::answer_record;
     use sea_orm::{ColumnTrait, ConnectOptions, Database, DatabaseBackend};
 
+    use crate::entities::answer_record;
     use crate::service::child_social::child_rank::rank_query;
     use crate::service::{ChildSocialService, DatabaseServiceTrait};
 
