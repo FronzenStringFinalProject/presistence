@@ -25,7 +25,7 @@ impl super::ChildSocialService {
             answer_record::Entity,
             self.db().get_database_backend(),
             child_id,
-            20,
+            10,
         );
 
         let result = self.db().query_all(stmt).await?;
@@ -46,7 +46,7 @@ impl super::ChildSocialService {
             child_check::Entity,
             self.db().get_database_backend(),
             child_id,
-            20,
+            10,
         );
 
         let result = self.db().query_all(stmt).await?;
