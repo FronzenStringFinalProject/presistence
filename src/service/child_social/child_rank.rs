@@ -15,6 +15,7 @@ pub struct ChildRank {
     pub rank: i64,
     pub rank_range: f64,
     pub value: i64,
+    pub is_child: bool,
 }
 
 impl super::ChildSocialService {
@@ -67,6 +68,7 @@ enum RankTmpTable {
     Rank,
     RankRange,
     Value,
+    IsChild,
 }
 fn rank_query<E>(
     order_expr: SimpleExpr,
@@ -108,6 +110,10 @@ where
             RankTmpTable::RankRange,
             RankTmpTable::Value,
         ])
+        .expr_as(
+            Expr::custom_keyword(RankTmpTable::Cid).eq(child_id),
+            RankTmpTable::IsChild,
+        )
         .cond_where(
             Condition::any()
                 .add(Expr::custom_keyword(RankTmpTable::Cid).eq(child_id))
