@@ -3,12 +3,14 @@ mod child_check;
 mod child_quiz_group;
 mod children;
 mod parent;
+mod quizes;
 
 pub use answer_record::AnswerRecordOperate;
 pub use child_check::ChildCheckOperate;
 pub use child_quiz_group::ChildQuizGroupOperate;
 pub use children::ChildrenOperate;
 pub use parent::ParentOperate;
+pub use quizes::QuizesOperate;
 pub trait OperateTrait {
     type Insert;
     type Update;
