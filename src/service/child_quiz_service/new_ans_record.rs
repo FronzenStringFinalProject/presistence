@@ -37,6 +37,7 @@ impl<D: TransactionTrait> ChildQuizService<D> {
         // score
         let score = Query::select()
             .expr_as(score_update(false), Alias::new("score"))
+            .from(children::Entity)
             .join(
                 JoinType::Join,
                 quizes::Entity,

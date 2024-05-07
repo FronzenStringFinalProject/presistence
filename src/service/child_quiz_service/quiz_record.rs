@@ -80,7 +80,7 @@ mod test {
 
     #[test]
     fn test_sql() {
-        let sql = Children::find_by_id(1)
+        let sql = Children::find_by_id(501)
             .select_only()
             .column(children::Column::Ability)
             .join(
@@ -113,6 +113,7 @@ mod test {
                 ),
                 "pred",
             )
+            .limit(1)
             .build(sea_orm::DatabaseBackend::Postgres)
             .to_string();
 
